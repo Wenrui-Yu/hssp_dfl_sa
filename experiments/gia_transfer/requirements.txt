@@ -1,0 +1,3 @@
+# The official Breaching repository is pinned for reproducible GIA experiments.
+# It installs torch, torchvision, hydra-core, scipy and lpips as dependencies.
+breaching @ git+https://github.com/JonasGeiping/breaching.git@faaab88e618dfa94d77b062ad50ac4a27afb1534

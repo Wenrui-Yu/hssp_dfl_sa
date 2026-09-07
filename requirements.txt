@@ -1,0 +1,32 @@
+# Python dependencies for the artifact.
+#
+# SageMath is NOT installable with pip; see INSTALL.md.  Everything below must
+# be installed into the *same* interpreter that Sage uses, e.g.
+#
+#     conda activate sage
+#     sage -python -m pip install -r requirements.txt
+#
+# The versions below are the ones the paper's results were produced with; any
+# reasonably recent release of each package works.
+
+# --- core: topology experiments, lattice attack, plotting --------------------
+numpy>=1.24
+scipy>=1.10
+networkx>=3.0
+pandas>=2.0
+matplotlib>=3.7
+
+# --- real-dataset attacks and downstream reconstruction ----------------------
+torch>=2.0
+torchvision>=0.15
+scikit-learn>=1.3
+
+# --- text modality: Sentiment140 embedding inversion and scoring -------------
+vec2text>=0.0.13
+rouge-score>=0.1.2
+bert-score>=0.3.13
+
+# --- optional, only for Table 6 (downstream GIA transferability) -------------
+# Install separately; see experiments/gia_transfer/requirements.txt
+# breaching @ git+https://github.com/JonasGeiping/breaching@faaab88e618dfa94d77b062ad50ac4a27afb1534
+# lpips>=0.1.4

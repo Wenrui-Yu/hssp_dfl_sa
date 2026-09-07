@@ -1,0 +1,11 @@
+topology,trial,n_honest,n_corrupt,graph_attempts,scale_factor,max_B,found_nonempty,found_num_vectors,true_weights_all_found,true_weights_matched,case1_num_solutions,case2_num_solutions,case3_num_solutions,step1_time,step2_time
+1,1,4,6,2,24,7,True,1152,True,4,30,571,1455876,0.103096,0.172203
+2,1,4,6,8,30,7,True,544,True,4,20,40,956736,0.000942,0.044706
+3,1,4,6,8,30,7,True,776,True,4,100,750,11588400,0.001284,0.079257
+4,1,4,6,10,30,7,True,104,True,4,3,28,22392,0.048423,0.009377
+5,1,4,6,19,30,7,True,360,True,4,3,12,977076,0.001345,0.023219
+6,1,4,6,1,30,7,True,608,True,4,5,10,260304,0.000922,0.055605
+7,1,4,6,3,30,7,True,640,True,4,15,60,2774016,0.000874,0.058244
+8,1,4,6,6,35,8,True,506,True,4,1,4,153876,0.000877,0.039568
+9,1,4,6,3,30,7,False,0,False,0,,,,,
+10,1,4,6,30,30,7,True,352,True,4,28,168,475440,0.000893,0.022448

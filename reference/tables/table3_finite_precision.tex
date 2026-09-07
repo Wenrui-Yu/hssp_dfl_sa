@@ -1,0 +1,28 @@
+\begin{table*}[t]
+\centering
+\label{tab:truncation-single-trial}
+\begin{tabular}{llccccc}
+\toprule
+Dataset & Condition & Exact clean & $r=1$ & $r=2$ & $r=4$ & $r=8$ \\
+\midrule
+\multirow{5}{*}{Sentiment140} & Baseline & \textbf{1.00 / 1152} & \text{--} & \text{--} & \text{--} & \text{--} \\
+& $S=10^{4}$ & \text{--} & 0.50 / 4096 & 0.50 / 4096 & 0.50 / 4096 & 0.50 / 4096 \\
+& $S=10^{6}$ & \text{--} & 0.00 / 1068 & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} \\
+& $S=10^{8}$ & \text{--} & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} \\
+& $S=10^{10}$ & \text{--} & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} \\
+\addlinespace
+\multirow{5}{*}{Purchase} & Baseline & \textbf{1.00 / 1152} & \text{--} & \text{--} & \text{--} & \text{--} \\
+& $S=10^{4}$ & \text{--} & 0.50 / 4096 & 0.50 / 4096 & 0.50 / 4096 & 0.50 / 4096 \\
+& $S=10^{6}$ & \text{--} & 0.50 / 4096 & 0.50 / 4096 & \textbf{1.00 / 1152} & 0.25 / 1776 \\
+& $S=10^{8}$ & \text{--} & 0.50 / 4096 & 0.50 / 4096 & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} \\
+& $S=10^{10}$ & \text{--} & 0.50 / 4096 & 0.50 / 4096 & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} \\
+\addlinespace
+\multirow{5}{*}{CIFAR} & Baseline & \textbf{1.00 / 1152} & \text{--} & \text{--} & \text{--} & \text{--} \\
+& $S=10^{4}$ & \text{--} & 0.50 / 4096 & 0.50 / 4096 & 0.50 / 4096 & 0.50 / 4096 \\
+& $S=10^{6}$ & \text{--} & 0.50 / 4096 & 0.25 / 2752 & 0.00 / 1776 & 0.50 / 4096 \\
+& $S=10^{8}$ & \text{--} & 0.50 / 4096 & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} \\
+& $S=10^{10}$ & \text{--} & 0.50 / 4096 & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} & \textbf{1.00 / 1152} \\
+\bottomrule
+\end{tabular}
+\caption{Robustness to finite-precision errors via noisy HSSP/HLCP results.}
+\end{table*}

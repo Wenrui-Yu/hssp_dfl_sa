@@ -1,0 +1,30 @@
+# One conda environment that satisfies every experiment in the artifact.
+#
+#     conda env create -f environment.yml
+#     conda activate hssp-dfl
+#     python -m pip install -r requirements.txt   # the pip-only text packages
+#
+# SageMath is the only hard-to-get dependency; conda-forge ships it for Linux
+# and macOS (Intel and Apple silicon).  Everything must live in this single
+# environment, because the attack scripts call Sage and PyTorch in one process.
+
+name: hssp-dfl
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.11
+  - sage=10.*          # SageMath: LLL/BKZ lattice reduction
+  - numpy>=1.24
+  - scipy>=1.10
+  - networkx>=3.0
+  - pandas>=2.0
+  - matplotlib>=3.7
+  - scikit-learn>=1.3
+  - pytorch>=2.0
+  - torchvision>=0.15
+  - pip
+  - pip:
+      - vec2text>=0.0.13
+      - rouge-score>=0.1.2
+      - bert-score>=0.3.13

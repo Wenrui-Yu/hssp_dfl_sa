@@ -1,0 +1,26 @@
+{
+  "paper": {
+    "batch_sizes": [8, 32, 64, 128],
+    "attacks": ["deepleakage", "invertinggradients", "seethroughgradients"],
+    "trials": 3,
+    "max_iterations": null,
+    "restarts": 1,
+    "known_labels": true
+  },
+  "quick": {
+    "batch_sizes": [8, 32],
+    "attacks": ["invertinggradients", "seethroughgradients"],
+    "trials": 1,
+    "max_iterations": 20,
+    "restarts": 1,
+    "known_labels": true
+  },
+  "smoke": {
+    "batch_sizes": [2],
+    "attacks": ["invertinggradients"],
+    "trials": 1,
+    "max_iterations": 1,
+    "restarts": 1,
+    "known_labels": true
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "nodes": [
+    100,
+    200
+  ],
+  "mean_degrees": [
+    4
+  ],
+  "trials": 100,
+  "corrupt_ratios": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "ws_rewire_probability": 0.1,
+  "tractable_core_size": 10,
+  "equivalence_margin": 0.05,
+  "bootstrap_resamples": 2000,
+  "seed": 20260727,
+  "topologies": [
+    "er",
+    "ring",
+    "small_world",
+    "scale_free"
+  ],
+  "er_model": "G(n,m) conditioned on connectivity"
+}
