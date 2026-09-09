@@ -19,8 +19,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from hssp_dfl import paths  # noqa: E402  (stdlib only; honours HSSP_RESULTS)
-
 DEFAULT_SEED = 20260727
 
 # The nine corruption ratios eta used throughout the paper's topology figures.
@@ -34,12 +32,8 @@ def seed_everything(seed: int) -> None:
 
 
 def resolve_output_dir(override, *default_parts: str) -> Path:
-    """Return (and create) ``override`` or ``<results>/<default_parts>``.
-
-    ``<results>`` is ``hssp_dfl.paths.RESULTS``, so setting ``HSSP_RESULTS``
-    redirects these scripts together with the plotting and checking scripts.
-    """
-    path = Path(override) if override else paths.RESULTS.joinpath(*default_parts)
+    """Return (and create) ``override`` or ``<root>/results/<default_parts>``."""
+    path = Path(override) if override else ROOT.joinpath("results", *default_parts)
     path.mkdir(parents=True, exist_ok=True)
     return path
 
