@@ -324,7 +324,7 @@ def controlled_data_audit(
     datasets = {}
     checkpoints = {}
     for batch_size in batch_sizes:
-        dataset_path = root / "snapshots" / f"b{batch_size}" / (
+        dataset_path = root / "snapshots" / f"b{batch_size}" / "datasets" / (
             f"dataset_ni{batch_size}_N10.pkl"
         )
         checkpoint_path = root / "snapshots" / f"b{batch_size}" / "models" / (

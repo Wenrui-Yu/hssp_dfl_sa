@@ -40,7 +40,7 @@ from hssp_dfl.gia import (  # noqa: E402
     run_breaching_attack,
 )
 from hssp_dfl.gia.metrics import denormalize_images  # noqa: E402
-from model import cnn_cifar  # noqa: E402
+from hssp_dfl.models import cnn_cifar  # noqa: E402
 
 
 _CIFAR_TRAINING_SCALE = 128.0 / 255.0

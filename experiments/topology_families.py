@@ -38,6 +38,12 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from hssp_dfl import paths  # noqa: E402  (honours HSSP_RESULTS)
+
 
 TOPOLOGIES = ("er", "ring", "small_world", "scale_free")
 TOPOLOGY_LABELS = {
@@ -785,7 +791,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("results/topology_families"),
+        default=paths.RESULTS / "topology_families",
     )
     args = parser.parse_args()
     if args.trials <= 0:

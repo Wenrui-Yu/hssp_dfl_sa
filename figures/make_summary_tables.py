@@ -183,7 +183,11 @@ def _build_table_lines(rows, task):
 
 def build_table():
 	rows = []
-	for path in sorted(TABLE_DIR.glob("*.csv")):
+	# Only the per-trial CSVs of the undirected runs: the directory also holds
+	# the *_summary.csv companions and the directed push-sum runs (Table 5).
+	for path in sorted(TABLE_DIR.glob("undirected_*.csv")):
+		if path.stem.endswith("_summary"):
+			continue
 		summary = _summarize_file(path)
 		if summary is not None:
 			rows.append(summary)

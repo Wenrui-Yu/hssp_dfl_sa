@@ -322,7 +322,12 @@ mkdir -p assets/models_dp && cp assets/models/model_avg_ni500_N10_t*_z0_e10*.pkl
 ## Citation
 
 ```bibtex
-TBD
+@article{yu2026topology,
+  title         = {When Topology Betrays Privacy: Lattice-Based Reconstruction Attacks on Secure Aggregation in Decentralized Federated Learning},
+  author        = {Wenrui Yu and Changlong Ji and Johannes Bjerva and Qiongxiu Li},
+  year          = {2026},
+  journal={arXiv preprint arXiv:2609.08476}
+}
 ```
 
 
