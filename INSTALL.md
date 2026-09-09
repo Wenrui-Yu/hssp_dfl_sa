@@ -131,11 +131,3 @@ need no embedding API. The [real-data section of README](README.md#reconstructio
 shows how to render Figure 10 and Tables 12-14 from reference metrics without
 rerunning inversion. This redraws published results, rather than validating
 new reconstructions.
-
-## Gaussian-noise experiments (Figures 5 and 11)
-
-The historical DP names are retained for reproduction. No clipping or privacy
-accounting is performed, so the epsilon parameter is not a formal privacy
-guarantee. Noise checkpoints are written to `HSSP_MODEL_DP_DIR` (default
-`assets/models_dp/`). Use 300 rounds for Figure 5 accuracy logs; two rounds
-suffice only for the attack checkpoints. See README Section 4 for both sweeps.
