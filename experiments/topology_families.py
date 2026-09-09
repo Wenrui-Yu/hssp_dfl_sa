@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import sys
 from pathlib import Path
 from typing import Iterable
 
@@ -37,6 +38,9 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from hssp_dfl import paths
 
 
 TOPOLOGIES = ("er", "ring", "small_world", "scale_free")
@@ -785,7 +789,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("results/topology_families"),
+        default=paths.RESULTS / "topology_families",
     )
     args = parser.parse_args()
     if args.trials <= 0:

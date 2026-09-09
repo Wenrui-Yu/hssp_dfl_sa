@@ -61,11 +61,10 @@ python -c "import vec2text, rouge_score, bert_score; print('text stack ok')"
 python -m hssp_dfl.paths          # shows which assets are present
 ```
 
-Then run the cheapest end-to-end result and diff it against the paper:
+Then run the cheapest end-to-end result:
 
 ```bash
 python reproduce.py table8
-python scripts/check_reference.py table8     # must print PASS
 ```
 
 ---
@@ -89,7 +88,8 @@ PyTorch went into a different interpreter. Reinstall with
 **`FileNotFoundError: Missing t0.5 checkpoint`**
 The real-dataset experiments need the assets. Run
 `bash scripts/setup_assets.sh --check` to see what is missing, then either link
-them in with `--from`, or train them (README §5).
+them in with `--from /path/to/source_repo`, or train them
+([README Section 4](README.md#4-producing-the-assets-from-scratch)).
 
 **Step 2 times out on the 20- or 40-node configurations**
 BKZ occasionally takes much longer than the 60 s default. Raise it:
@@ -122,10 +122,20 @@ the threat model, the per-attack iteration budgets and the resumable stages.
 
 `experiments/vec2text_eval.py` inverts recovered ada-002 embeddings back to text
 by re-embedding its own hypotheses through a hosted embedding API, so it reads
-`OPENAI_API_KEY` from the environment. It is the only script in the artifact
-that reaches outside the machine.
+`OPENAI_API_KEY` from the environment. Training Sentiment140 also needs the
+embedding service if its embedding cache is absent. Initial dataset/model
+downloads and BERTScore model loading may require network access.
 
-Everything upstream of it is fully offline, including the lattice attack itself
-and the embedding MSE and cosine similarity it is scored on. Section 7 of the
-README shows how to build Figure 10 and Tables 12-14 from the published metrics
-if you do not want to re-run the inversion.
+Once assets are available, the lattice attack and embedding MSE/cosine scoring
+need no embedding API. The [real-data section of README](README.md#reconstruction-from-real-dfl-checkpoints--needs-sagemath-pytorch-and-assets)
+shows how to render Figure 10 and Tables 12-14 from reference metrics without
+rerunning inversion. This redraws published results, rather than validating
+new reconstructions.
+
+## Gaussian-noise experiments (Figures 5 and 11)
+
+The historical DP names are retained for reproduction. No clipping or privacy
+accounting is performed, so the epsilon parameter is not a formal privacy
+guarantee. Noise checkpoints are written to `HSSP_MODEL_DP_DIR` (default
+`assets/models_dp/`). Use 300 rounds for Figure 5 accuracy logs; two rounds
+suffice only for the attack checkpoints. See README Section 4 for both sweeps.

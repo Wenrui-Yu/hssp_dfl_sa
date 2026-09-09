@@ -26,6 +26,8 @@ import sys
 import time
 from pathlib import Path
 
+from hssp_dfl import paths
+
 ROOT = Path(__file__).resolve().parent
 PY = sys.executable
 
@@ -250,7 +252,7 @@ TARGETS: dict[str, dict] = {
         "commands": [
             _exp("dp_defense.py") + ["--step1", "exact",
                                      "--group-pattern", DP_MAIN_GROUPS,
-                                     "--output", "results/dp_defense/dp_exact_stats.csv"],
+                                     "--output", str(paths.RESULTS / "dp_defense/dp_exact_stats.csv")],
             _fig("make_figure5.py"),
         ],
     },
@@ -261,14 +263,14 @@ TARGETS: dict[str, dict] = {
         "commands": [
             _exp("dp_defense.py") + ["--step1", "exact",
                                      "--group-pattern", DP_MAIN_GROUPS,
-                                     "--output", "results/dp_defense/dp_exact_stats.csv"],
+                                     "--output", str(paths.RESULTS / "dp_defense/dp_exact_stats.csv")],
             _exp("dp_defense.py") + ["--step1", "noisy",
                                      "--group-pattern", DP_MAIN_GROUPS,
-                                     "--output", "results/dp_defense/dp_noisy_stats.csv"],
+                                     "--output", str(paths.RESULTS / "dp_defense/dp_noisy_stats.csv")],
             _exp("dp_defense.py") + ["--step1", "noisy",
                                      "--group-pattern", DP_EXTENDED_GROUPS,
                                      "--output",
-                                     "results/dp_defense/dp_noisy_extended_stats.csv"],
+                                     str(paths.RESULTS / "dp_defense/dp_noisy_extended_stats.csv")],
             _fig("make_figure11.py"),
         ],
     },

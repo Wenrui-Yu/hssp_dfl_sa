@@ -1,6 +1,6 @@
 """Recall / candidate-count summary tables -- paper Tables 1 and 9.
 
-Aggregates every per-trial CSV written by experiments/lattice_attack_batch.py
+Aggregates the 100-row *_recall.csv files from experiments/lattice_attack_batch.py
 into the two LaTeX summary tables of Sections 7.3:
 
     Table 1  mHLCP (non-uniform Metropolis weights)
@@ -25,7 +25,7 @@ import argparse
 _parser = argparse.ArgumentParser(description=__doc__)
 _parser.add_argument("--input-dir",
                      default=str(paths.RESULTS / "lattice_attack_batch"),
-                     help="directory of per-trial attack CSVs")
+                     help="directory of 100-row *_recall.csv attack files")
 _parser.add_argument("--output",
                      default=str(paths.RESULTS / "figures" /
                                  "table1_and_table9_summary.tex"))
@@ -183,7 +183,13 @@ def _build_table_lines(rows, task):
 
 def build_table():
 	rows = []
-	for path in sorted(TABLE_DIR.glob("*.csv")):
+	# Recall runs are separate from the per-topology Cases 1-3 experiments.
+	inputs = sorted(TABLE_DIR.glob("undirected_*_recall.csv"))
+	if not inputs:
+		raise FileNotFoundError("No recall CSVs found; run reproduce.py table1 or table9 first.")
+	for path in inputs:
+		if len(_read_rows(path)) != 100:
+			raise ValueError(f"{path}: Tables 1/9 require 100 trial rows per configuration.")
 		summary = _summarize_file(path)
 		if summary is not None:
 			rows.append(summary)
@@ -201,6 +207,7 @@ def build_table():
 		lines.extend(_build_table_lines(task_rows, task))
 
 	text = "\n".join(lines)
+	OUT_TEX.parent.mkdir(parents=True, exist_ok=True)
 	OUT_TEX.write_text(text)
 	print(text)
 

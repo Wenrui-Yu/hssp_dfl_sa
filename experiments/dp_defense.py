@@ -1,7 +1,7 @@
-"""Differential-privacy defense against the lattice attack -- Figures 5 and 11.
+"""Gaussian-noise robustness of the lattice attack -- Figures 5 and 11.
 
 Runs the mHLCP attack against every complete DFL checkpoint triplet produced by
-``training/train_cifar_dp.py`` and records, per privacy budget:
+``training/train_cifar_dp.py`` and records, per historical epsilon parameter:
 
 * whether all ground-truth weight vectors were recovered,
 * the MSE and cosine similarity between the reconstructed and true gradients.
@@ -11,9 +11,11 @@ Two Step-1 variants are available (Section 7.6):
     --step1 exact   the paper's exact-arithmetic Step 1  -> Figure 5
     --step1 noisy   the noise-tolerant Step 1 of Sec 4.4 -> Figure 11
 
-Local DP (``exchange``) perturbs X before aggregation and therefore leaves the
-mHSSP/mHLCP structure intact; aggregation-level DP (``aggregate``) perturbs the
+Local noise (``exchange``) perturbs X before aggregation and therefore leaves the
+mHSSP/mHLCP structure intact; aggregate noise (``aggregate``) perturbs the
 observation itself and breaks the exact algebraic relation.
+
+The DP names match the paper and checkpoint files.
 
 Requires SageMath and PyTorch.
 """

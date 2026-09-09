@@ -33,7 +33,10 @@ from typing import Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_OUTPUT_ROOT = PROJECT_ROOT / "results" / "gia_transfer"
+sys.path.insert(0, str(PROJECT_ROOT))
+from hssp_dfl import paths
+
+DEFAULT_OUTPUT_ROOT = paths.RESULTS / "gia_transfer"
 DEFAULT_BATCH_SIZES = (1, 2, 4, 8)
 DEFAULT_NODES = (2, 3, 6, 9)
 SOURCES = ("true_update", "recovered_solution24")

@@ -158,7 +158,7 @@ sage -python experiments/gia_transfer/gia_large_batch.py \
 To generate one-step DFL snapshots for a particular larger batch:
 
 ```bash
-sage -python fl.py \
+sage -python training/train_cifar.py \
   --batch-size 32 \
   --local-epochs 1 \
   --num-communications 2 \
@@ -176,9 +176,9 @@ Run Breaching directly on that saved gradient with:
 ```bash
 sage -python experiments/gia_transfer/gia_large_batch.py \
   --source true-gradients \
-  --checkpoint models/model_avg_ni32_N10_t0_z0_e1.pkl \
+  --checkpoint assets/models/model_avg_ni32_N10_t0_z0_e1.pkl \
   --gradient-pickle results/true_gradients_b32/true_gradients_ni32_N10_t0_z0_e1.pkl \
-  --dataset-pickle dataset_ni32_N10.pkl \
+  --dataset-pickle assets/datasets/dataset_ni32_N10.pkl \
   --checkpoint-node 2 \
   --labels known \
   --device cuda
@@ -190,9 +190,9 @@ Then evaluate the model delta (replace `32` with the generated batch size):
 sage -python experiments/gia_transfer/gia_large_batch.py \
   --source snapshots \
   --preset paper \
-  --before-checkpoint models/model_avg_ni32_N10_t0_z0_e1.pkl \
-  --after-checkpoint models/model_avg_ni32_N10_t0_5_z0_e1.pkl \
-  --dataset-pickle dataset_ni32_N10.pkl \
+  --before-checkpoint assets/models/model_avg_ni32_N10_t0_z0_e1.pkl \
+  --after-checkpoint assets/models/model_avg_ni32_N10_t0_5_z0_e1.pkl \
+  --dataset-pickle assets/datasets/dataset_ni32_N10.pkl \
   --checkpoint-node 0 \
   --device cuda
 ```
@@ -207,12 +207,12 @@ validation, the following command exports only the Case 1 candidate with the
 lowest ground-truth state MSE:
 
 ```bash
-DFL_BATCH_SIZE=32 \
-DFL_CIFAR_ATTACK_MODE=none \
-DFL_EXPORT_RECOVERED_STATES=results/gia_recovered_states_b32 \
-DFL_EXPORT_SELECTION=best \
-DFL_EXPORT_CASES=case1_exact_pattern \
-sage -python dfl_cifar_attack_stat.py
+sage -python experiments/attack_cifar.py \
+  --batch-size 32 \
+  --attack-mode none \
+  --export-recovered-states results/gia_recovered_states_b32 \
+  --export-selection best \
+  --export-cases case1_exact_pattern
 ```
 
 Use one exported `recovered_ni32_*.pkl` file as `--after-checkpoint` in the
@@ -220,9 +220,9 @@ snapshot command above. Keep the case, selected-candidate index, client node,
 and lattice matched-MSE columns when joining the GIA result table. Selection by
 `best` uses the true state and is therefore an oracle evaluation device, not an
 attacker-side candidate-selection algorithm. The default
-`DFL_EXPORT_SELECTION=first` behavior exports only the first sampled candidate
+`--export-selection first` behavior exports only the first sampled candidate
 per case to avoid writing dozens of large checkpoints; set
-`DFL_EXPORT_MAX_PER_CASE=0` only when every sampled candidate is required.
+`--export-max-per-case 0` only when every sampled candidate is required.
 
 For the paired four-node comparison between exact gradients and recovered
 solution 24 at batch sizes 1, 2, 4, and 8, regenerate the table from completed

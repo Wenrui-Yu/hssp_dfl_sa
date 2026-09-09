@@ -28,11 +28,15 @@ from __future__ import annotations
 
 import argparse
 import csv
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from hssp_dfl import paths
 
 
 DEFAULT_INPUTS = (
-	Path("results/finite_precision/checkpoint_replay_trials.csv"),
+	paths.RESULTS / "finite_precision/checkpoint_replay_trials.csv",
 )
 DEFAULT_SCALES = (10**4, 10**6, 10**8, 10**10)
 DEFAULT_R_VALUES = (1, 2, 4, 8)
@@ -228,7 +232,7 @@ def _parse_args() -> argparse.Namespace:
 	)
 	parser.add_argument(
 		"--output", type=Path,
-		default=Path("results/truncation_single_trial_table.tex"),
+		default=paths.RESULTS / "finite_precision/table3.tex",
 	)
 	parser.add_argument("--baseline-scale", type=int, default=10**10)
 	parser.add_argument("--baseline-exact-r", type=int, default=4)

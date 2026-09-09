@@ -489,7 +489,8 @@ def main():
     out = resolve_output_dir(args.output_dir, "lattice_attack_batch")
     prefix = "directed_pushsum" if args.graph == "pushsum" else "undirected"
     tag = args.tag or (f"{prefix}_{args.problem}_NODE{args.nodes}"
-                       f"_EDGE{args.edges}_CORRUPT{n_corrupt}")
+                       f"_EDGE{args.edges}_CORRUPT{n_corrupt}"
+                       f"{'' if args.cases else '_recall'}")
 
     print(f"[lattice_attack_batch] {tag}")
     print(f"  problem={args.problem} graph={args.graph} "

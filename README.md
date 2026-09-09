@@ -39,7 +39,7 @@ Verify:
 
 ```bash
 python -c "import sage.all, torch, networkx, matplotlib; print('environment ok')"
-python -m hssp_dfl.paths     # print the resolved input/output locations
+python -m hssp_dfl.paths
 ```
 
 Full details, including how to reuse an existing Sage installation, are in
@@ -53,11 +53,19 @@ The topology experiments (Figures 2, 6, 7, 8) and the synthetic lattice attacks
 The real-dataset experiments need DFL checkpoints and per-node dataset pickles. Link them in from wherever you keep them:
 
 ```bash
-bash scripts/setup_assets.sh --from /path/to/checkpoints   # symlink (default)
-bash scripts/setup_assets.sh --from /path/to/checkpoints --copy
+bash scripts/setup_assets.sh --from /path/to/source_repo   # symlink (default)
+bash scripts/setup_assets.sh --from /path/to/source_repo --copy
 bash scripts/setup_assets.sh --check                       # inventory
-bash scripts/setup_assets.sh --clean                       # empty assets/ again
 ```
+
+The source must contain `network.mat`, `models/`, and the per-node dataset
+pickles at its root; `models_dp/` and `data/` supply the optional DP checkpoints
+and raw datasets. The setup script populates this checkout's `assets/` tree.
+For inputs stored elsewhere, use the environment variables in
+[Where things go](#where-things-go). No checkpoints or topology are bundled;
+see [Section 4](#4-producing-the-assets-from-scratch) to generate them.
+Importing replaces same-name destination files. `--clean` deletes the contents
+of `assets/`, including copied files, and is not a required setup step.
 
 ---
 
@@ -82,7 +90,7 @@ python experiments/core_subgraph_scale.py --nodes 200 --edges 300 --trials 100
 python experiments/topology_families.py --nodes 100 200 --trials 100
 ```
 
-### Lattice attack on synthetic core sub-graphs — needs SageMath
+### Lattice attack on core sub-graphs — needs SageMath
 
 One script, [`experiments/lattice_attack_batch.py`](experiments/lattice_attack_batch.py),
 produces every synthetic table. `--problem mhlcp` uses Metropolis–Hastings
@@ -100,14 +108,19 @@ push-sum protocol with the auxiliary mass-balance scalar as a secondary filter.
 | **Table 10** — per-topology mHSSP + Cases 2–3, `η=0.6` | `python reproduce.py table10` |
 | **Table 11** — per-topology mHSSP + Cases 2–3, `η=0.7` | `python reproduce.py table11` |
 
-Equivalent direct invocations:
+Examples of individual configurations (these do not generate an entire table):
 
 ```bash
-# Table 7 / Table 8: ten topologies, full Cases 1-3 filtering
+# Table 7: ten topologies; use --corrupt-ratio 0.7 for Table 8
 python experiments/lattice_attack_batch.py --problem mhlcp \
     --nodes 10 --edges 20 --corrupt-ratio 0.6 --topologies 10
 
-# Table 1 / Table 9: 100 topologies, recall only (no filtering)
+# One Table 1 configuration: mHLCP, 100 topologies, no filtering
+python experiments/lattice_attack_batch.py --problem mhlcp \
+    --nodes 10 --edges 20 --corrupt-ratio 0.6 --topologies 100 \
+    --max-resample 1 --summary-only
+
+# One Table 9 configuration: mHSSP, 100 topologies, no filtering
 python experiments/lattice_attack_batch.py --problem mhssp \
     --nodes 20 --edges 40 --corrupt-ratio 0.8 --topologies 100 \
     --max-resample 1 --summary-only
@@ -117,6 +130,14 @@ python figures/make_summary_tables.py          # -> table1_and_table9_summary.te
 python experiments/lattice_attack_batch.py --graph pushsum --problem mhlcp \
     --nodes 10 --edges 30 --corrupt-ratio 0.7 --topologies 5
 ```
+
+Use `python reproduce.py table1` and `python reproduce.py table9` for all five
+and twelve configurations, respectively. The summary renderer includes the
+undirected per-trial files ending in `_recall.csv`. Recall runs use this suffix
+to keep their 100-topology inputs separate from the detailed runs for
+Tables 7/8/10/11. Rerun Tables 1/9 to generate these files if your existing
+outputs use the older names.
+The renderer rejects recall files with a row count other than 100.
 
 Each run writes `<tag>.csv` (one row per trial), `<tag>_summary.csv`
 (recall, mean candidate count, mean Step 1 / Step 2 time) and
@@ -153,6 +174,21 @@ python figures/make_text_tables.py
 Table 2 in the paper is a hand-picked excerpt of Table 12 (the Case 1 table),
 showing one node whose embedding is recovered with cosine similarity 1.0.
 
+`figure10` and `tables12-14` invoke `vec2text_eval.py`, which requires
+`OPENAI_API_KEY` in the environment for hosted embedding calls. Recovering gradients and embeddings does not require
+this API. Initial model and dataset downloads may still require network access.
+
+To render the published text results without rerunning online inversion:
+
+```bash
+python figures/make_stat_figures.py --dataset sentiment140 \
+    --sentiment-csv reference/tables/figure10_sentiment140_vec2text_metrics.csv
+python figures/make_text_tables.py \
+    --input reference/tables/table12-14_sentiment140_with_bertscore.csv
+```
+
+These commands redraw reference results; they do not validate a new inversion.
+
 
 ### Robustness and defenses
 
@@ -172,6 +208,9 @@ python experiments/gia_transfer/run_pipeline.py        # resumable, stage-by-sta
 ```
 
 See [`experiments/gia_transfer/README.md`](experiments/gia_transfer/README.md).
+
+Figure 1 is a conceptual illustration and Table 4 is a literature comparison;
+neither has an experiment command. Table 2 is the excerpt described above.
 
 ---
 
@@ -234,7 +273,7 @@ method the paper discusses.
 │   └── train_cifar_dp.py          the LDP / CDP variants
 │
 ├── scripts/
-│   ├── setup_assets.sh            link or copy the large inputs into assets/
+│   └── setup_assets.sh            link or copy the large inputs into assets/
 │
 ├── reference/                     the paper's own numbers, for comparison
 │   ├── tables/                    CSV and LaTeX for every table and metric figure
@@ -247,8 +286,8 @@ method the paper discusses.
 
 ### Where things go
 
-`hssp_dfl/paths.py` is the single place that resolves locations. Override any of
-them with an environment variable:
+Python entry points use `hssp_dfl/paths.py` for their default input/output
+locations. Explicit command-line paths take precedence. Override defaults with:
 
 | Variable | Default | Holds |
 |---|---|---|
@@ -264,42 +303,50 @@ them with an environment variable:
 python -m hssp_dfl.paths     # print the resolved paths and what exists
 ```
 
-Paths recorded inside output files are written relative to the repository root,
-so a `run_config.json` or a results CSV can be shared as-is.
+Some run configurations use repository-relative paths, while GIA manifests
+record absolute checkpoint paths. Review generated artifacts before sharing
+them if local storage paths should remain private.
 
 ---
 
 ## 4. Producing the assets from scratch
 
-Only needed if you do not have the checkpoints. Everything below writes into
-`assets/`, so the attacks find it automatically.
+Only needed if you do not have the checkpoints. Under the default paths,
+training writes ordinary checkpoints into `assets/models/`, noise-experiment
+checkpoints into `assets/models_dp/`, and datasets into `assets/datasets/`.
+Table 6 manages its own snapshots beneath `results/gia_transfer/`.
 
-> **The training scripts refuse to overwrite existing checkpoints.** `assets/`
-> is usually a set of symlinks into a shared store, and the shipped
-> `assets/network.mat` is the exact topology the paper's real-dataset numbers
-> were produced on — regenerating it yields a *different* graph. Pass `--force`
-> to overwrite deliberately, or point `HSSP_ASSETS` at an empty directory.
+> **The training scripts refuse to overwrite existing checkpoints.** Use the
+> topology associated with your checkpoints. Network generation is deterministic
+> for a fixed seed (default 0), graph parameters and library versions; changing
+> those settings can make existing checkpoints incompatible. Use a fresh
+> `HSSP_ASSETS` directory for a new run, or `--force` to replace files deliberately.
 
 ```bash
 # 1. a topology that satisfies the attack conditions (n=10, e=20, eta=0.6)
-python training/generate_network.py                      # -> assets/network.mat
+python training/generate_network.py --seed 0             # -> assets/network.mat
 
 # 2. two communication rounds are enough: the attack needs t0 / t0.5 / t1
 python training/train_cifar.py        --batch-size 1 --num-communications 2 --graph load
 python training/train_purchase.py     --batch-size 1 --num-communications 2
 python training/train_sentiment140.py --batch-size 1 --num-communications 2
 
-# 3. larger batches, only for Table 6
-python training/train_cifar.py --batch-size 4  --num-communications 2 --graph load
-python training/train_cifar.py --batch-size 8 --num-communications 2 --graph load
+# 3. Table 6: the pipeline trains nested batches 1, 2, 4, 8 itself
+# Install experiments/gia_transfer/requirements.txt first.
+python reproduce.py table6
 
-# 4. DP checkpoints, only for Figures 5 and 11
-python training/train_cifar_dp.py --dp-mode none      --dp-epsilon 0  --num-comm 2
+# 4. Figures 5/11: checkpoints plus the 300-round accuracy logs for Figure 5
+python training/train_cifar_dp.py --dp-mode none --dp-epsilon 0 --num-comm 300
 for eps in 10 50 100 200 500 1000 10000; do
-    python training/train_cifar_dp.py --dp-mode exchange  --dp-epsilon $eps --num-comm 2
+    python training/train_cifar_dp.py --dp-mode exchange --dp-epsilon "$eps" --num-comm 300
 done
-for eps in 50 100 200 500 1000 10000 20000 50000 100000; do
-    python training/train_cifar_dp.py --dp-mode aggregate --dp-epsilon $eps --num-comm 2
+for eps in 50 100 200 500 1000 10000; do
+    python training/train_cifar_dp.py --dp-mode aggregate --dp-epsilon "$eps" --num-comm 300
+done
+
+# Figure 11 extension: only early checkpoints are needed (no accuracy curve)
+for eps in 20000 50000 100000 1000000 100000000 10000000000; do
+    python training/train_cifar_dp.py --dp-mode aggregate --dp-epsilon "$eps" --num-comm 2
 done
 ```
 
@@ -309,12 +356,14 @@ CIFAR-10 downloads itself into `assets/data/cifar10`. Purchase-100 expects
 needs a key for the embedding service, but the cached embeddings at
 `assets/data/sentiment140/embeddings_ada002.pt` let you skip that step.
 
-The DP attack reads its checkpoints from `assets/models_dp/`, so copy the tagged
-triplets there after training:
-
-```bash
-mkdir -p assets/models_dp && cp assets/models/model_avg_ni500_N10_t*_z0_e10*.pkl assets/models_dp/
-```
+The noise-training script now writes directly to `HSSP_MODEL_DP_DIR`
+(default `assets/models_dp/`), which the attack also reads; no copy is needed.
+For an older run whose noise checkpoints are in `models/`, set
+`HSSP_MODEL_DP_DIR` to that directory when invoking the attack.
+Use `--num-comm 2` for the main sweep only if you need attack checkpoints alone;
+two-round accuracy logs do not reproduce Figure 5's final accuracy.
+The 300-round setting matches the reference evaluation length, not a guarantee
+of identical stochastic training results across environments.
 
 ---
 
@@ -322,7 +371,12 @@ mkdir -p assets/models_dp && cp assets/models/model_avg_ni500_N10_t*_z0_e10*.pkl
 ## Citation
 
 ```bibtex
-TBD
+@article{yu2026topology,
+  title         = {When Topology Betrays Privacy: Lattice-Based Reconstruction Attacks on Secure Aggregation in Decentralized Federated Learning},
+  author        = {Wenrui Yu and Changlong Ji and Johannes Bjerva and Qiongxiu Li},
+  year          = {2026},
+  journal={arXiv preprint arXiv:2609.08476}
+}
 ```
 
 

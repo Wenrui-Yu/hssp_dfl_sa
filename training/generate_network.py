@@ -14,9 +14,9 @@ Keys written to the .mat file:
     honest_nodes   / corrupt_nodes   the global partition
     sg_honest      / sg_corrupt      the core sub-graph the attack targets
 
-The artifact ships the exact topology used for the paper as
-``assets/network.mat``.  Regenerating it produces a *different* topology, so
-this script refuses to overwrite an existing file unless you pass --force.
+The topology is generated at ``assets/network.mat`` or supplied with external
+assets. With the same seed, parameters and library versions, generation is
+deterministic. Existing files are protected unless you pass --force.
 """
 
 import sys as _sys
@@ -183,9 +183,8 @@ if __name__ == "__main__":
     if _Path(NETWORK_MAT).exists() and not ARGS.force:
         raise SystemExit(
             f"{NETWORK_MAT} already exists.\n"
-            f"That file is the exact topology the paper's real-dataset results "
-            f"were produced on; regenerating it yields a different graph and "
-            f"different numbers.\n"
+            f"Use the topology associated with your checkpoints; changing the "
+            f"seed or graph parameters can make those checkpoints incompatible.\n"
             f"Pass --force to overwrite it, or --output to write elsewhere."
         )
 

@@ -1,12 +1,14 @@
-"""DFL training on CIFAR-10 with differential privacy -- inputs for Figures 5 and 11.
+"""DFL training with the paper's Gaussian perturbations -- Figures 5 and 11.
 
-``--dp-mode exchange`` is local DP (noise on each client update before it is
-exchanged); ``--dp-mode aggregate`` is aggregation-level DP (noise on the
-neighbourhood aggregate).  ``--dp-mode none`` trains the reference model.
+``--dp-mode exchange`` adds noise to local model states before exchange;
+``--dp-mode aggregate`` adds noise to neighbourhood aggregates.
+``--dp-mode none`` trains the reference model. Epsilon controls the noise
+amplitude.
 
-Writes the checkpoint triplet to assets/models/ (tagged with the DP mode and
+Writes the checkpoint triplet to assets/models_dp/ (tagged with the DP mode and
 epsilon) and the per-epsilon test accuracy to results/dp_defense/.
 Use --num-comm 2 to produce just the t0 / t0.5 / t1 states the attack needs.
+The default 300 rounds match the length of the published accuracy logs.
 """
 
 import sys as _sys
@@ -16,7 +18,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 
 from hssp_dfl import paths as _paths
 
-MODEL_OUT = _paths.MODEL_DIR
+MODEL_OUT = _paths.MODEL_DP_DIR
 DATASET_OUT = _paths.DATASET_DIR
 NETWORK_MAT = str(_paths.NETWORK_MAT)
 MODEL_OUT.mkdir(parents=True, exist_ok=True)
@@ -56,7 +58,7 @@ torch.set_default_dtype(torch.float64)
 class args:
     batchsize = 500
     num_of_clients = 10
-    num_comm =100
+    num_comm =300
     IID = 1  # 1-iid  0-non-iid
     z_std = 0
     epo = 10
@@ -167,18 +169,14 @@ def add_dp_noise_to_state_dict(
     delta=1e-5,
     clipping_norm=1,
 ):
+    """Reproduce the historical Gaussian-noise experiment without clipping.
+
+    ``clipping_norm`` is a legacy name for the noise scale C in
+    sigma = sqrt(2*log(1.25/delta))*C/epsilon.
+    Input tensors are never modified in place.
+    """
     if epsilon <= 0:
         return {name: tensor.clone() for name, tensor in state_dict.items()}
-
-    global_norm = torch.sqrt(sum(torch.sum(p**2) for p in state_dict.values() if torch.is_floating_point(p)))
-
-   # clip_coef=min(1.0, clipping_norm / (global_norm + 1e-12))
-    clip_coef=clipping_norm
-
-    if clip_coef < 1:
-        for name in state_dict:
-            if torch.is_floating_point(state_dict[name]):
-                state_dict[name] *= clip_coef
 
     sigma = math.sqrt(2 * math.log(1.25 / delta)) / epsilon
     noise_std = sigma * clipping_norm
@@ -268,7 +266,7 @@ def _guard(force, *targets):
             + "\n  ".join(existing)
             + "\n\nThese may be the exact files the paper's results were produced on"
               "\n(assets/ is frequently a symlink into a shared store)."
-              "\nPass --force to overwrite, or --output-dir / HSSP_ASSETS to write elsewhere."
+              "\nPass --force to overwrite, or set HSSP_MODEL_DP_DIR / HSSP_ASSETS to write elsewhere."
         )
 
 
@@ -284,7 +282,7 @@ if __name__ == '__main__':
         "--dp-epsilon",
         type=float,
         default=0.0,
-        help="Privacy budget ε for DP injection.",
+        help="Epsilon parameter controlling the Gaussian noise amplitude.",
     )
     parser.add_argument(
         "--eval-batch-size",
@@ -299,7 +297,7 @@ if __name__ == '__main__':
         default=None,
         help=(
             "Override the number of communication rounds. The default keeps "
-            "the original 100-round setting; use 2 when only t0/t0_5/t1 "
+            "the reference accuracy logs' 300-round setting; use 2 when only t0/t0_5/t1 "
             "checkpoints are needed by the HSSP attack."
         ),
     )

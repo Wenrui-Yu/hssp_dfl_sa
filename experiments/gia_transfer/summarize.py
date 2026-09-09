@@ -20,6 +20,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from hssp_dfl import paths
+
 from experiments.gia_transfer.gia_large_batch import (
     CIFAR_SPEC,
     build_model,
@@ -324,7 +326,7 @@ def controlled_data_audit(
     datasets = {}
     checkpoints = {}
     for batch_size in batch_sizes:
-        dataset_path = root / "snapshots" / f"b{batch_size}" / (
+        dataset_path = root / "snapshots" / f"b{batch_size}" / "datasets" / (
             f"dataset_ni{batch_size}_N10.pkl"
         )
         checkpoint_path = root / "snapshots" / f"b{batch_size}" / "models" / (
@@ -629,7 +631,7 @@ def make_plot(
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--root", type=Path, default=Path("results/gia_true_vs_recovered_paired")
+        "--root", type=Path, default=paths.RESULTS / "gia_transfer"
     )
     parser.add_argument("--batch-sizes", type=parse_csv_ints, default=BATCH_SIZES)
     parser.add_argument("--nodes", type=parse_csv_ints, default=NODES)
