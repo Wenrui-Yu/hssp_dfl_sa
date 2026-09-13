@@ -50,7 +50,20 @@ Full details, including how to reuse an existing Sage installation, are in
 The topology experiments (Figures 2, 6, 7, 8) and the synthetic lattice attacks
 (Tables 1, 5, 7–11) are self-contained.
 
-The real-dataset experiments need DFL checkpoints and per-node dataset pickles. Link them in from wherever you keep them:
+The repository includes the base assets for the real-dataset attacks: the fixed
+`assets/network.mat`, nine CIFAR-10/Purchase-100/Sentiment140 checkpoints
+(`t0`, `t0.5`, `t1`) in `assets/models/`, and the corresponding per-node data
+and ground-truth tweets in `assets/datasets/`. No separate download or asset
+import is needed for these batch-size-1 attacks.
+
+The Sentiment140 embedding cache is included at
+`assets/data/sentiment140/embeddings_ada002.pt`. It corresponds to the default
+100 samples selected by the training script with Python shuffle seed 0 from
+the original 1.6-million-row CSV. Retraining still needs that CSV; text inversion
+still needs the embedding API. The base assets occupy approximately 325 MB.
+
+Noise-experiment checkpoints, full raw datasets, and Table 6 snapshots are not
+included. To import additional assets from an existing source repository:
 
 ```bash
 bash scripts/setup_assets.sh --from /path/to/source_repo   # symlink (default)
@@ -62,8 +75,8 @@ The source must contain `network.mat`, `models/`, and the per-node dataset
 pickles at its root; `models_dp/` and `data/` supply the optional DP checkpoints
 and raw datasets. The setup script populates this checkout's `assets/` tree.
 For inputs stored elsewhere, use the environment variables in
-[Where things go](#where-things-go). No checkpoints or topology are bundled;
-see [Section 4](#4-producing-the-assets-from-scratch) to generate them.
+[Where things go](#where-things-go). See
+[Section 4](#4-producing-the-assets-from-scratch) to generate additional assets.
 Importing replaces same-name destination files. `--clean` deletes the contents
 of `assets/`, including copied files, and is not a required setup step.
 
@@ -131,18 +144,6 @@ python experiments/lattice_attack_batch.py --graph pushsum --problem mhlcp \
     --nodes 10 --edges 30 --corrupt-ratio 0.7 --topologies 5
 ```
 
-Use `python reproduce.py table1` and `python reproduce.py table9` for all five
-and twelve configurations, respectively. The summary renderer includes the
-undirected per-trial files ending in `_recall.csv`. Recall runs use this suffix
-to keep their 100-topology inputs separate from the detailed runs for
-Tables 7/8/10/11. Rerun Tables 1/9 to generate these files if your existing
-outputs use the older names.
-The renderer rejects recall files with a row count other than 100.
-
-Each run writes `<tag>.csv` (one row per trial), `<tag>_summary.csv`
-(recall, mean candidate count, mean Step 1 / Step 2 time) and
-`<tag>_run_config.json` under `results/lattice_attack_batch/`.
-
 ### Reconstruction from real DFL checkpoints — needs SageMath, PyTorch and assets
 
 All three run on the fixed topology in `assets/network.mat`
@@ -187,9 +188,6 @@ python figures/make_text_tables.py \
     --input reference/tables/table12-14_sentiment140_with_bertscore.csv
 ```
 
-These commands redraw reference results; they do not validate a new inversion.
-
-
 ### Robustness and defenses
 
 | Paper | Command | Notes |
@@ -209,15 +207,11 @@ python experiments/gia_transfer/run_pipeline.py        # resumable, stage-by-sta
 
 See [`experiments/gia_transfer/README.md`](experiments/gia_transfer/README.md).
 
-Figure 1 is a conceptual illustration and Table 4 is a literature comparison;
-neither has an experiment command. Table 2 is the excerpt described above.
 
 ---
 
 ## 3. Repository layout
 
-Everything here either backs a numbered result in the paper or implements a
-method the paper discusses. 
 
 ```
 .

@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Populate assets/ with the large inputs the real-dataset experiments need.
 #
-# The artifact ships only code, documentation and reference numbers.  The DFL
-# checkpoints, the per-node dataset pickles and the raw datasets are several
-# gigabytes and are therefore linked (or copied) from wherever you keep them.
+# Base batch-size-1 checkpoints and per-node datasets are included in assets/.
+# This script imports additional checkpoints and datasets from another tree.
 #
 # Usage
 #   bash scripts/setup_assets.sh --from /path/to/source_repo          # symlink
