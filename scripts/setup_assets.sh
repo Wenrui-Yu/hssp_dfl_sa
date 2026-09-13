@@ -68,7 +68,6 @@ DATASETS_CORE=(
     "dataset_purchase_ni1_N10.pkl"
     "dataset_sentiment140_ni1_N10.pkl"
     "texts_sentiment140_ni1_N10.pkl"
-    "tfidf_vectorizer.pkl"
 )
 
 # Optional: only needed for the large-batch GIA transferability table (Table 6).

@@ -501,7 +501,8 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument("--output-dir", type=Path, default=_paths.RESULTS / "gia_transfer" / "large_batch")
-    parser.add_argument("--dry-run", action="store_true", help="Ask Breaching to execute one iteration")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Execute one iteration; write results under OUTPUT_DIR/dry-run")
     parser.add_argument("--fail-fast", action="store_true")
     return parser
 
@@ -627,6 +628,8 @@ def main() -> int:
     torch.manual_seed(args.seed)
 
     output_dir = args.output_dir.resolve()
+    if args.dry_run:
+        output_dir = output_dir / "dry-run"
     output_dir.mkdir(parents=True, exist_ok=True)
     summary_path = output_dir / "summary.csv"
     examples_path = output_dir / "per_example.csv"
@@ -639,6 +642,7 @@ def main() -> int:
     )
     manifest = {
         "command": sys.argv,
+        "dry_run": args.dry_run,
         "source": args.source,
         "preset": args.preset,
         "resolved_config": config,
@@ -688,6 +692,7 @@ def main() -> int:
         key: manifest[key]
         for key in (
             "source",
+            "dry_run",
             "resolved_config",
             "seed",
             "dtype",
@@ -704,6 +709,10 @@ def main() -> int:
     if manifest_path.exists():
         with manifest_path.open(encoding="utf-8") as handle:
             previous_manifest = json.load(handle)
+        # Older manifests recorded this flag only in the command line.
+        previous_manifest.setdefault(
+            "dry_run", "--dry-run" in previous_manifest.get("command", [])
+        )
         previous_identity = {
             key: previous_manifest.get(key)
             for key in identity
