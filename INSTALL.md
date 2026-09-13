@@ -1,12 +1,8 @@
 # Installation
 
-Everything in this artifact runs in **one** Python interpreter. The lattice
+Everything in this artifact runs in one Python interpreter. The lattice
 attack calls SageMath and the reconstruction stage calls PyTorch inside the same
 process, so they cannot live in separate environments.
-
-Tested on macOS 14/15 (Apple silicon and Intel) and Ubuntu 22.04, with
-SageMath 10.x, Python 3.11 and PyTorch 2.x. CPU only — no GPU is required for
-any result in the paper.
 
 ---
 
@@ -113,8 +109,8 @@ python -m pip install -r experiments/gia_transfer/requirements.txt
 ```
 
 Nothing else in the artifact depends on it. See
-[`experiments/gia_transfer/README.md`](experiments/gia_transfer/README.md) for
-the threat model, the per-attack iteration budgets and the resumable stages.
+[`experiments/gia_transfer/run_pipeline.py`](experiments/gia_transfer/run_pipeline.py)
+for the experiment configuration and resumable stages.
 
 ---
 

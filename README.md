@@ -198,14 +198,15 @@ python figures/make_text_tables.py \
 | **Table 6** — downstream GIA transferability, batches 1–8 | `python reproduce.py table6` | needs `breaching`, see below |
 
 Table 6 is the only experiment with a dependency outside the main environment.
-Install it first and read its protocol:
+Install it first, then run the pipeline:
 
 ```bash
 python -m pip install -r experiments/gia_transfer/requirements.txt
 python experiments/gia_transfer/run_pipeline.py        # resumable, stage-by-stage
 ```
 
-See [`experiments/gia_transfer/README.md`](experiments/gia_transfer/README.md).
+See [`experiments/gia_transfer/run_pipeline.py`](experiments/gia_transfer/run_pipeline.py)
+for the experiment configuration and resumable stages.
 
 
 ---
